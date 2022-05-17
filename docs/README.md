@@ -50,3 +50,29 @@ type NullableId = Id | null
 // App.tsx
 const id: Id = 1 // 不需要import Id这个类型，可以直接用
 ```
+
+# vite配置路径别名
+
+```ts
+// vite.config.ts
+import path from 'path'
+
+const resolve = (dir: string) => path.resolve(__dirname, '.', dir)
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve('src')
+    }
+  }
+})
+```
+
+上面的代码会报错，首先`path`是node模块，需要安装node的类型：
+
+```sh
+pnpm add @types/node -D
+```
+
+然后需要在`tsconfig.node.json`里把`compilerOptions.allowSyntheticDefaultImports`字段设置为true（没有这个字段需要自己加上），因为`path`模块里是没有默认导出的。我这里用的vite版本是2.9.9，以前用vite启动的时候是没有`tsconfig.node.json`的，不知道从哪个版本开始改的，以前的配置是不一样的，这个需要注意一下。
+
