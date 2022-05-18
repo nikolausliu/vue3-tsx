@@ -1,7 +1,13 @@
 import { defineComponent } from 'vue'
+import Hello from '@/components/Hello.vue'
 
 export default defineComponent({
   setup() {
-    return () => <div>hello world</div>
+    return () => (
+      <div>
+        <span>hello world</span>
+        <Hello />
+      </div>
+    )
   }
 })

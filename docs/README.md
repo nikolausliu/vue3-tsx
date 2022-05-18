@@ -76,3 +76,91 @@ pnpm add @types/node -D
 
 然后需要在`tsconfig.node.json`里把`compilerOptions.allowSyntheticDefaultImports`字段设置为true（没有这个字段需要自己加上），因为`path`模块里是没有默认导出的。我这里用的vite版本是2.9.9，以前用vite启动的时候是没有`tsconfig.node.json`的，不知道从哪个版本开始改的，以前的配置是不一样的，这个需要注意一下。
 
+# 配置eslint
+
+```sh
+pnpm add eslint eslint-plugin-vue @typescript-eslint/parser @typescript-eslint/eslint-plugin -D
+```
+
+这里逐一介绍下上面这些依赖的作用：
+
+- eslint: 这个不用说，eslint的核心代码
+- eslint-plugin-vue: eslint插件，里面是eslint关于vue的一些规则
+- @typescript-eslint/parser: 指定eslint的解析器（默认是Espree）
+- @typescript-eslint/eslint-plugin: eslint插件，里面是eslint关于ts的一些规则
+
+然后通过命令行初始化eslint配置文件，这样会自动创建一个`.eslintrc.js`文件：
+
+```sh
+node_modules/.bin/eslint --init
+```
+
+![](./assets/eslint-init.png)
+
+此时配置文件是这样的：
+
+```js
+// .eslintrc.js
+module.exports = {
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/essential",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "vue",
+    "@typescript-eslint"
+  ],
+  "rules": {}
+}
+```
+
+其中`"plugin:vue/essential"`是vue2的规则集，我们需要改成vue3的：`"plugin:vue/vue3-recommended"`
+
+在package.json添加两行命令：
+
+```json
+// package.json
+"lint": "eslint --ext .ts,.tsx,.vue src/",
+"lint:fix": "eslint --ext .ts,.tsx,.vue --fix src/"
+```
+
+运行`pnpm lint`发现报错：
+
+![](./assets/lint-1.png)
+
+这是因为我们把`parserOptions.parser`设置成了`@typescript-eslint/parser`，这个解析器不认识vue文件，我们在`.eslintrc.js`文件中加一行`"parser": "vue-eslint-parser"`，这样vue文件就能使用`vue-eslint-parser`这个解析器了。
+
+```js
+// .eslintrc.js
+"parser": "vue-eslint-parser",
+"parserOptions": {
+  "parser": "@typescript-eslint/parser",
+},
+```
+
+如果vue文件里使用了script setup写法，并且使用了`withDefaults`,`defineProps`,`defineEmits`和`defineExpose`这些编译器宏，也会触发eslint报错，因为这些没有import进来，eslint不认识：
+
+![](./assets/lint-2.png)
+
+eslint-plugin-vue的env中内置了对编译器宏的支持，我们开启就好了：
+
+```js
+// .eslintrc.js
+"env": {
+  "vue/setup-compiler-macros": true
+}
+```
+
+
