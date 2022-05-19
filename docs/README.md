@@ -78,6 +78,8 @@ pnpm add @types/node -D
 
 # 配置eslint
 
+## 依赖
+
 ```sh
 pnpm add eslint eslint-plugin-vue @typescript-eslint/parser @typescript-eslint/eslint-plugin -D
 ```
@@ -88,6 +90,8 @@ pnpm add eslint eslint-plugin-vue @typescript-eslint/parser @typescript-eslint/e
 - eslint-plugin-vue: eslint插件，里面是eslint关于vue的一些规则
 - @typescript-eslint/parser: 指定eslint的解析器（默认是Espree）
 - @typescript-eslint/eslint-plugin: eslint插件，里面是eslint关于ts的一些规则
+
+## 配置文件
 
 然后通过命令行初始化eslint配置文件，这样会自动创建一个`.eslintrc.js`文件：
 
@@ -163,4 +167,26 @@ eslint-plugin-vue的env中内置了对编译器宏的支持，我们开启就好
 }
 ```
 
+## 集成vscode-eslint插件
 
+我们在开发过程中如果写一段代码就命令行lint校验一下，开发体验很不好。我们可以通过vscode的eslint插件，在我们保存代码时自动帮我们校验当前变动的文件，并且还能尽量修复可修复的代码。
+
+首先在vscode中安装eslint插件，同时新建`.vscode/settings.json`文件：
+
+```json
+// .vscode/setttings.json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
+```
+
+这样在vscode中按下`ctrl + s`保存代码时，vscode的eslint插件就会自动帮我们应用eslint校验规则，并且可以帮我们自动修复部分可以被修复的代码。比如，我们在`main.ts`里输入下面这行代码：
+
+```ts
+// main.ts
+var a = 1
+```
+
+eslint的`no-var`不允许我们使用`var`来声明变量，所以当我们保存代码时，vscode的eslint插件就会自动帮我们把`var`修复为`const`。
