@@ -8,12 +8,14 @@
 import { ref } from 'vue'
 const count = ref(0)
 
-const props = withDefaults(defineProps<{
-  color: string
-}>(), {
-  color: 'red'
-})
-
+const props = withDefaults(
+  defineProps<{
+    color: string
+  }>(),
+  {
+    color: 'red',
+  }
+)
 </script>
 
 <script lang="ts">
@@ -22,7 +24,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-
-
-</style>
+<style lang="less" scoped></style>
